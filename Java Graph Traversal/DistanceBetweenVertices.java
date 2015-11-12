@@ -67,6 +67,67 @@ class Graph{
         }
     }
 
+    public void printShortestPaths(Map<Integer, List<Integer>> currentGraph){
+        for (Map.Entry<Integer, List<Integer>> currentNode : currentGraph.entrySet()){
+            for (Map.Entry<Integer, List<Integer>> connectedNode : currentGraph.entrySet()){
+                if (!currentNode.getKey().equals(connectedNode.getKey())){
+                    String currentPath = GetPath(currentGraph, currentNode.getKey(), connectedNode.getKey());
+                    if (currentPath.equals("")){
+                        System.out.printf("There is no path from node: %d to node: %d.\n",
+                                currentNode.getKey(), connectedNode.getKey());
+                    } else {
+                        System.out.printf("The path from node: %d to node: %d is: %s.\n",
+                                currentNode.getKey(), connectedNode.getKey(), currentPath);
+                    }
+                }
+            }
+        }
+    }
+
+    private String GetPath(Map<Integer, List<Integer>> currentGraph, Integer currentNode, Integer connectedNode) {
+        int[] parents = new int[currentGraph.size() + 1];
+        Queue<Integer> queue = new LinkedList<>();
+        int[] visited = new int[currentGraph.size() + 1];
+
+        queue.add(currentNode);
+        visited[currentNode] = 1;
+        parents[currentNode] = 0;
+
+        while (!queue.isEmpty()){
+            int node = queue.remove();
+
+            if (node == connectedNode){
+                break;
+            }
+
+            for (Integer childNode : currentGraph.get(node)){
+                if (visited[childNode] == 0){
+                    queue.add(childNode);
+                    parents[childNode] = node;
+                    visited[childNode] = 1;
+                }
+            }
+        }
+
+        if (parents[connectedNode] != 0) {
+            StringBuilder sb = new StringBuilder();
+
+            int j = connectedNode;
+
+            while (j != 0) {
+                sb.append(" ");
+                sb.append(j);
+                j = parents[j];
+            }
+
+            sb.reverse();
+
+            return sb.toString();
+        } else {
+            return "";
+        }
+    }
+
     private int GetMinDistance(Map<Integer, List<Integer>> currentGraph, Integer currentNode, Integer otherNode) {
         List<Integer> distances = new ArrayList<>();
         HashSet<Integer> visited = new HashSet<>();
@@ -111,10 +172,12 @@ public class DistanceBetweenVertices {
         System.out.println("Variant one:");
         currentGraph.getDistances(currentGraph.VariantOne());
         System.out.println();
-        System.out.println("Variant two:");
-        currentGraph.getDistances(currentGraph.VariantTwo());
+        //System.out.println("Variant two:");
+        //currentGraph.getDistances(currentGraph.VariantTwo());
         System.out.println();
-        System.out.println("Variant three:");
-        currentGraph.getDistances(currentGraph.VariantThree());
+        //System.out.println("Variant three:");
+        //currentGraph.getDistances(currentGraph.VariantThree());
+        System.out.println("Shortest paths in variant one:");
+        currentGraph.printShortestPaths(currentGraph.VariantTwo());
     }
 }
